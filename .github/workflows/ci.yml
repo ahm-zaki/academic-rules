@@ -22,24 +22,36 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Installs your FastAPI dependencies
         pip install -r requirements.txt
-        # Installs the specific CI tools you requested
-        pip install black flake8 pytest pytest-cov
+        # Added uvicorn and httpx to ensure the API can boot and be tested
+        pip install black flake8 pytest pytest-cov uvicorn httpx requests
 
     # GATE 1: Formatting Check (Black)
-    # The --check flag ensures Black only checks the files and fails if they aren't formatted, 
-    # rather than trying to rewrite them mid-pipeline.
     - name: Check Code Formatting
       run: black --check .
 
     # GATE 2: Static Analysis / Linting (Flake8)
-    # The flags prevent Flake8 from failing on Black's standard 88-character line limit.
     - name: Run Code Linter
       run: flake8 . --max-line-length=88 --extend-ignore=E203
 
-    # GATE 3: Testing & Coverage (Pytest + Pytest-Cov)
-    # --cov-report=term-missing shows you exactly which lines of code your tests missed in the Action logs.
+    # GATE 3: Testing & Coverage (Must be >= 80%)
     - name: Run Tests & Check Coverage
+      # --cov-fail-under=80 forces the pipeline to fail if coverage drops below 80%
       run: |
-        pytest --cov=. --cov-report=term-missing
+        pytest --cov=. --cov-report=term-missing --cov-fail-under=80
+
+    # GATE 4: Boot API & Integration Tests
+    - name: Boot API and Run Integration Tests
+      run: |
+        # 1. Start the FastAPI app in the background using the '&' operator
+        uvicorn main:app --host 127.0.0.1 --port 8000 &
+        
+        # 2. Pause to give the server time to fully boot
+        sleep 5
+        
+        # 3. Hit the server to confirm it is actively accepting connections
+        curl --fail http://127.0.0.1:8000/docs || exit 1
+        
+        # 4. Run your integration/API tests
+        # (If your integration tests are in a specific folder, change this to: pytest tests/integration/)
+        pytest
