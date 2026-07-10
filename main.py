@@ -46,7 +46,7 @@ def normalize_code(code: str) -> str:
 
 
 def format_code_for_msg(norm_code: str) -> str:
-    """Formats a normalized code 'COSC3506' into 'COSC-3506' for clean JSON messaging.""" # noqa: E501
+    """Formats a normalized code 'COSC3506' into 'COSC-3506' for clean JSON messaging."""  # noqa: E501
     match = re.match(r"([A-Z]{4})(\d{4})", norm_code)
     if match:
         return f"{match.group(1)}-{match.group(2)}"
@@ -343,7 +343,7 @@ def get_audit_report(student_id: str, strict: bool = False):
                         {
                             "course_code": formatted_code,
                             "type": "MISSING_PREREQUISITE",
-                            "message": f"Missing prerequisite: {format_code_for_msg(pq)}" # noqa: E501,
+                            "message": f"Missing prerequisite: {format_code_for_msg(pq)}",  # noqa: E501,
                         }
                     )
 
@@ -356,7 +356,7 @@ def get_audit_report(student_id: str, strict: bool = False):
                         {
                             "course_code": formatted_code,
                             "type": "CROSS_LIST_CONFLICT",
-                            "message": f"Cross-listed with completed course {format_code_for_msg(cross)}" # noqa: E501,
+                            "message": f"Cross-listed with completed course {format_code_for_msg(cross)}",  # noqa: E501,
                         }
                     )
 
