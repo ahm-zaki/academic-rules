@@ -184,7 +184,7 @@ def test_audit_report():
             },
         ],
         "plan": [
-            # Trying to take COSC 2000 before the prereq was completed (23W is before 23F)
+            # Trying to take COSC 2000 before the prereq was completed (23W is before 23F # noqa: E501)
             {"course_code": "COSC 2000", "term": "23W"},
             # Taking it at a valid time, but triggers cross-list conflict with MATH 2000
             {"course_code": "COSC 2000", "term": "24F"},
